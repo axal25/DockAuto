@@ -11,7 +11,7 @@
 `git commit -m 'msg'`
 1. Verify commited changes  
 `git status`
-1. Push changes to remote repository  
+1. Push changes to remote repository branch called ~~master~~ **main**  
 `git push -u origin main`  
 GitHub changed ~~master~~ to **main**  
 ~~`git push -u origin master`~~
@@ -22,6 +22,30 @@ GitHub changed ~~master~~ to **main**
 `git rm path/to/file`
 1. Reset git local to previous local commit  
 `git reset HEAD~`
+1. List branches  
+`git branch`
+1. Crete new branch  
+`git checkout -b <branchname>`
+1. Switch to existing branch  
+`git checkout <branch_name>`
+1. Remove local branch  
+`git branch -d <branch_name>`
+1. Forcefully remove local branch  
+`git branch -D <branch_name>`
+1. List stashes  
+`git stash list`
+1. Stash current uncommited changes  
+`git stash`
+1. Reverse stashed-in changes (apply changes back in again)
+    1. when there is only 1 stash  
+    `git stash apply`
+    1. when there are more than 1 stash  
+    `git stash apply stash@{<stash_number>}`
+1. Remove stash (stashed changes)
+    1. when there is only 1 stash  
+    `git stash drop`
+    1. when there are more than 1 stash  
+    `git stash drop stash@{<stash_number>}`
 
 # Troubles
 1. Git push not working - ~~master~~ is now **main**
