@@ -25,6 +25,10 @@ COPY oracledb_setup.sql /oracledb/setup/oracledb_setup.sql
 
 COPY oracledb_inner_run_TO_DO.sh /oracledb/setup/oracledb_inner_run_TO_DO.sh
 
+RUN source /oracledb/setup/oracledb_inner_paths.env \
+	&& mkdir -p $SETUP_TMP_DIR_PATH \
+	&& chmod 777 $SETUP_TMP_DIR_PATH
+
 USER oracle
 
 # /home/oracle/setup/dockerInit.sh
