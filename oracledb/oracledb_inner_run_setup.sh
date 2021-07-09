@@ -32,7 +32,7 @@ run_setup_sql() {
   WHENEVER SQLERROR EXIT 2;
 
   CONNECT $USERNAME_SYS/$PASSWORD_SYS@$HOST/$SCHEMA_SYS.$DOMAIN AS $ROLE_SYS;
-  @/oracledb_setup.sql;
+  @$SETUP_DIR_PATH/oracledb_setup.sql;
   EXIT 0;
 EOF
 return $?;
@@ -68,6 +68,27 @@ run_setup_disabled_shell_print() {
 
   rm -f $RUN_SETUP_TMP_OUTPUT_PATH;
 }
+
+command_info "pwd"
+pwd
+
+command_info "ls /"
+ls /
+
+command_info "ls /oracledb"
+ls /oracledb
+
+command_info "ls /oracledb/setup/"
+ls /oracledb/setup/
+
+command_info "ls /oracledb/setup/tmp"
+ls /oracledb/setup/tmp
+
+command_info "echo \$SETUP_TMP_DIR_PATH"
+echo $SETUP_TMP_DIR_PATH
+
+command_info "ls \$SETUP_TMP_DIR_PATH"
+ls $SETUP_TMP_DIR_PATH
 
 command_info "Run setup SQL script"
 run_setup_disabled_shell_print;

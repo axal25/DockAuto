@@ -67,6 +67,6 @@ docker ps
 
 section_info "Configure ORACLE Database container"
 
-command_info "docker exec -it $ORACLE_DB_CONTAINER_NAME bash -c \"source /home/oracle/.bashrc $PATH/oracledb_inner_run.sh\""
+command_info "docker exec -it $ORACLE_DB_CONTAINER_NAME bash -c \"source /home/oracle/.bashrc $SETUP_DIR_PATH/oracledb_inner_run.sh\""
 docker exec -it $ORACLE_DB_CONTAINER_NAME bash -c "source /home/oracle/.bashrc
                                                    /oracledb/setup/oracledb_inner_run.sh"

@@ -32,4 +32,18 @@ FROM V$CONTAINERS c
 ORDER BY c.CON_ID, c.NAME;
 ALTER USER SYS IDENTIFIED BY password;
 
+CREATE TABLE region_types
+(
+    id   number(3)    NOT NULL,
+    type varchar2(50) NOT NULL,
+    CONSTRAINT region_types_pk PRIMARY KEY (id)
+);
+
+INSERT ALL INTO region_types
+VALUES (0, 'VOIVODESHIP')
+INTO region_types
+VALUES (1, 'STATE')
+SELECT 1
+FROM DUAL;
+
 !echo "from inside of oracledb_setup.sql"
