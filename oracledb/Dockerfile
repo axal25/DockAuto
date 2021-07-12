@@ -9,29 +9,39 @@ RUN yum -y update \
 # RUN yum -y install git
 RUN /usr/bin/ol_yum_configure.sh
 
-COPY copied_from/common/common_outer_shell_functions.sh /oracledb/setup/common_outer_shell_functions.sh
-COPY copied_from/oracledb/oracledb_outer_vars.env /oracledb/setup/oracledb_outer_vars.env
+# Passed in oracledb_outer_build_and_run_docker.sh as "--build-arg"
+ARG SETUP_DIR_PATH_FWD_SLASH_ENDED="/not_exitsting_folder/should_be_passed_from/oracledb_outer_build_and_run_docker.sh/as/--build-arg"
 
-COPY oracledb_inner_vars.env /oracledb/setup/oracledb_inner_vars.env
-COPY oracledb_inner_users.env /oracledb/setup/oracledb_inner_users.env
-COPY oracledb_inner_paths.env /oracledb/setup/oracledb_inner_paths.env
+WORKDIR $SETUP_DIR_PATH_FWD_SLASH_ENDED
 
-COPY oracledb_inner_run.sh /oracledb/setup/oracledb_inner_run.sh
-COPY oracledb_inner_run_try_service.sh /oracledb/setup/oracledb_inner_run_try_service.sh
-COPY oracledb_inner_run_change_sys_password_from_default.sh /oracledb/setup/oracledb_inner_run_change_sys_password_from_default.sh
-COPY oracledb_inner_run_setup.sh /oracledb/setup/oracledb_inner_run_setup.sh
+# Overriding ENTRYPOINT seems to also CMD
+# Even though ENTRYPOINT is originally null 
+ENTRYPOINT ["./oracledb_inner_entrypoint.sh"]
+CMD ["/bin/sh", "-c", "/bin/bash /home/oracle/setup/dockerInit.sh"]
 
-COPY oracledb_setup.sql /oracledb/setup/oracledb_setup.sql
+COPY copied_from/common/common_outer_shell_functions.sh $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY copied_from/oracledb/oracledb_outer_vars.env $SETUP_DIR_PATH_FWD_SLASH_ENDED
 
-COPY oracledb_inner_run_TO_DO.sh /oracledb/setup/oracledb_inner_run_TO_DO.sh
+COPY oracledb_inner_vars.env $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY oracledb_inner_users.env $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY oracledb_inner_paths.env $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY oracledb_inner_entrypoint.sh $SETUP_DIR_PATH_FWD_SLASH_ENDED
 
-RUN source /oracledb/setup/oracledb_inner_paths.env \
+COPY oracledb_inner_setup.sh $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY oracledb_inner_try_service.sh $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY oracledb_inner_change_sys_password_from_default.sh $SETUP_DIR_PATH_FWD_SLASH_ENDED
+COPY oracledb_inner_sql_setup.sh $SETUP_DIR_PATH_FWD_SLASH_ENDED
+
+COPY oracledb_setup.sql $SETUP_DIR_PATH_FWD_SLASH_ENDED
+
+RUN source "${SETUP_DIR_PATH_FWD_SLASH_ENDED}oracledb_inner_paths.env" \
 	&& mkdir -p $SETUP_TMP_DIR_PATH \
 	&& chmod 777 $SETUP_TMP_DIR_PATH
 
-USER oracle
+# CMD has already access to entry point so do not need source
+# CMD 'mkdir -p $SETUP_TMP_DIR_PATH';
+# CMD 'chmod 777 $SETUP_TMP_DIR_PATH';
 
-# /home/oracle/setup/dockerInit.sh
-# ADD host/path/to/your/sql/your_sql_file.sql /docker-entrypoint-initdb.d/ # to be tested
+USER oracle
 
 RUN echo "ORACLE Database - Dockerfile finished sucessfully"
