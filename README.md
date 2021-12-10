@@ -13,7 +13,7 @@ A template project for automating creation of 2 separate dockers: 1 for Oracle d
 ## Optional customization
 
 1. Fill out optional parameters inside file  
-`/copy_to/common/common_outer_vars.sh`
+`/copy_to/oracledb/oracledb_outer_custom_vars.sh`
 
 ## To do
 
@@ -30,8 +30,10 @@ A template project for automating creation of 2 separate dockers: 1 for Oracle d
             1. oracledb/oracledb_inner_setup.sh
                 1. so on
         1. Filename: copy_to/oracledb/oracledb_outer_paths.env
-    1. ./oracledb/oracledb_setup.sql - to be filled, tested
-    1. customize oracledb_setup.sql source (git?)? optional (accessible, customizable)?
+    2. OracleDB quick connect script - script connecting from outside shell to inside SQLPlus
+    3. ./oracledb/oracledb_setup.sql - to be filled, tested
+    4. customize oracledb_setup.sql source (git?)? optional (accessible, customizable)?
         1. one file for customizable variables - overriding existing variables
-    1. Move password to be changed to from default somewhere accessible, customizable
-    1. Tomcatapp docker	
+    5. Move password to be changed to from default somewhere accessible, customizable
+    6. Tomcatapp docker	
+    7. [REALLY OPTIONAL] Timer - timer.sh - reusable trimer for wait on functions

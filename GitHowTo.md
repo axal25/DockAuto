@@ -4,7 +4,7 @@
 `git clone https://github.com/axal25/DockAuto.git`
 1. Make changes
 1. Add changes to the index  
-`add .`
+`git add .`
 1. Verify the added changes  
 `git status`
 1. Commit changes with message  
