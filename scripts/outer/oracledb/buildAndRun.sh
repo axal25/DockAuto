@@ -11,6 +11,7 @@ containerConfigure() {
   docker exec -it "$v_oracle_db_container_name" bash -c "source /home/oracle/.bashrc
                                                      $F_Container_Workdir_SetupContainer"
 }
+
 startContainer() {
   section_info "Run $v_oracle_db_descriptive_name container - $v_oracle_db_container_name | PORTS: $v_oracle_db_container_port_outer:$v_oracle_db_container_port_inner"
   # -e SETUP_DIR_PATH

@@ -18,12 +18,18 @@ execSqlCommand() {
     SET HEADING OFF;" \
     || spoolAndTermOutOff="";
 
+  local asRole;
+
+  [[ $role != "" ]] \
+    && asRole=" AS $role" \
+    || asRole="";
+
   sqlplus -S /nolog <<EOF
 
   WHENEVER OSERROR EXIT 1;
   WHENEVER SQLERROR EXIT 2;
 
-  CONNECT ${username}/${password}@${host}/${schema}.${domain} AS ${role};
+  CONNECT ${username}/${password}@${host}/${schema}.${domain}${asRole};
 
   SET COLSEP ' | ';
   SET LINESIZE 200;

@@ -42,14 +42,11 @@ updateContainerFiles() {
   command_info "docker cp $F_S_I_Oracledb_UnSetup $v_oracle_db_container_name:$P_Container_Workdir"
   docker cp "$F_S_I_Oracledb_UnSetup" "$v_oracle_db_container_name:$P_Container_Workdir"
 
-  command_info "docker cp $F_S_I_Oracledb_Debug $v_oracle_db_container_name:$P_Container_Workdir"
-  docker cp "$F_S_I_Oracledb_Debug" "$v_oracle_db_container_name:$P_Container_Workdir"
+  command_info "docker cp $F_S_I_Oracledb_DebugSetup $v_oracle_db_container_name:$P_Container_Workdir"
+  docker cp "$F_S_I_Oracledb_DebugSetup" "$v_oracle_db_container_name:$P_Container_Workdir"
 }
 
-runUpdatedCommand() {
-  clear;
-  entryPoint;
-  updateContainerFiles;
+runContainerScripts() {
 
 #  command_info "docker exec -it $v_oracle_db_container_name bash -c \"source /home/oracle/.bashrc \\
 #                                                                         && source $F_Entrypoint \\
@@ -72,29 +69,37 @@ runUpdatedCommand() {
   command_info "docker exec -it $v_oracle_db_container_name bash -c \"source /home/oracle/.bashrc \\
                                                                          && source $F_Entrypoint \\
                                                                          && source $F_SetupContainer \\
-                                                                         && runSqlSetupScript\""
+                                                                         && setup\""
   docker exec -it "$v_oracle_db_container_name" bash -c "source /home/oracle/.bashrc \
                                                          && source $F_Entrypoint \
                                                          && source $F_SetupContainer \
-                                                         && runSqlSetupScript";
+                                                         && setup";
 
   command_info "docker exec -it $v_oracle_db_container_name bash -c \"source /home/oracle/.bashrc \\
                                                                          && source $F_Entrypoint \\
                                                                          && source $F_SetupContainer \\
-                                                                         && runDebugSqlSetupScript\""
+                                                                         && runDebugSetupSqlScript\""
   docker exec -it "$v_oracle_db_container_name" bash -c "source /home/oracle/.bashrc \
                                                          && source $F_Entrypoint \
                                                          && source $F_SetupContainer \
-                                                         && runDebugSqlSetupScript";
+                                                         && runDebugSetupSqlScript";
 
   command_info "docker exec -it $v_oracle_db_container_name bash -c \"source /home/oracle/.bashrc \\
                                                                          && source $F_Entrypoint \\
                                                                          && source $F_SetupContainer \\
-                                                                         && runSqlUnSetupScript\""
+                                                                         && runUnSetupSqlScript\""
   docker exec -it "$v_oracle_db_container_name" bash -c "source /home/oracle/.bashrc \
                                                            && source $F_Entrypoint \
                                                            && source $F_SetupContainer \
-                                                           && runSqlUnSetupScript";
+                                                           && runUnSetupSqlScript";
+}
+
+runUpdatedCommand() {
+  clear;
+  echo "runUpdatedCommand";
+  entryPoint;
+  updateContainerFiles;
+  runContainerScripts;
 }
 
 runUpdatedCommand;

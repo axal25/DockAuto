@@ -2,21 +2,25 @@
 
 1. Clone remote repository to local drive  
 `git clone https://github.com/axal25/DockAuto.git`
-1. Make changes
-1. Add changes to the index  
+2. Make changes
+3. Add changes to the index  
 `git add .`
-1. Verify the added changes  
+4. Verify the added changes  
 `git status`
-1. Commit changes with message  
+5. Commit changes with message  
 `git commit -m 'msg'`
-1. Verify commited changes  
+6. Verify commited changes  
 `git status`
-1. Push changes to remote repository branch called ~~master~~ **main**  
+7. Push changes to remote repository branch called ~~master~~ **main**  
 `git push -u origin main`  
 GitHub changed ~~master~~ to **main**  
 ~~`git push -u origin master`~~
 
-# Useful
+## Pass
+pass
+pass -c Git/axal25
+
+### Git - Useful
 
 1. Remove added to index file  
 `git rm path/to/file`

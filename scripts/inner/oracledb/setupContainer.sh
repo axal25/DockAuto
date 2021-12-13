@@ -2,6 +2,16 @@
 
 source "$F_Entrypoint"
 
+getDefaultDebugPrint() {
+  local debugPrint=false;
+  echo "$debugPrint";
+}
+
+getDefaultEnableOutput() {
+  local enableOutput=false;
+  echo "$enableOutput";
+}
+
 tryService() {
   local enableOutput debugPrint;
   local "${@}";
@@ -34,48 +44,73 @@ changePassword() {
   return $?;
 }
 
-runSqlSetupScript() {
+setup() {
   local enableOutput debugPrint;
   local "${@}";
 
+  enableOutput=true;
+  debugPrint=true;
+
+  mkdir -p /home/oracle/oradata/localSqlDeveloper;
+  mkdir -p /home/oracle/oradata/ecommerce;
+
   runSqlCommand \
-    descriptiveCommandName="runSqlSetupScript" \
+    descriptiveCommandName="setup" \
     username="$s_username_sys" password="$s_password_sys" role="$s_role_sys" \
     host="$v_host" schema="$s_schema_sys" domain="$v_domain" \
     command="@$P_Container_Workdir/$F_Setup;" \
-    spoolPath="$F_Container_Workdir_Tmp_RunSqlSetupScript" \
+    spoolPath="$F_Container_Workdir_Tmp_SetupOutput" \
     enableOutput="$enableOutput" \
     debugPrint="$debugPrint";
 
   return $?;
 }
 
-runDebugSqlSetupScript() {
+debugSetup() {
   local enableOutput debugPrint;
   local "${@}";
 
   runSqlCommand \
-    descriptiveCommandName="runDebugSqlSetupScript" \
+    descriptiveCommandName="debugSetup" \
     username="$s_username_sys" password="$s_password_sys" role="$s_role_sys" \
     host="$v_host" schema="$s_schema_sys" domain="$v_domain" \
-    command="@$P_Container_Workdir/$F_Debug;" \
-    spoolPath="$F_Container_Workdir_Tmp_VerifySqlSetupScript" \
+    command="@$P_Container_Workdir/$F_DebugSetup;" \
+    spoolPath="$F_Container_Workdir_Tmp_DebugSetupOutput" \
     enableOutput="$enableOutput" \
     debugPrint="$debugPrint";
 
   return $?;
 }
 
-runSqlUnSetupScript() {
+unSetup() {
   local enableOutput debugPrint;
   local "${@}";
 
   runSqlCommand \
-    descriptiveCommandName="runSqlUnSetupScript" \
+    descriptiveCommandName="unSetup" \
     username="$s_username_sys" password="$s_password_sys" role="$s_role_sys" \
     host="$v_host" schema="$s_schema_sys" domain="$v_domain" \
     command="@$P_Container_Workdir/$F_UnSetup;" \
-    spoolPath="$F_Container_Workdir_Tmp_RunSqlUnSetupScript" \
+    spoolPath="$F_Container_Workdir_Tmp_unSetup" \
+    enableOutput="$enableOutput" \
+    debugPrint="$debugPrint";
+
+  return $?;
+}
+
+ecommerce() {
+  local enableOutput debugPrint;
+  local "${@}";
+
+  enableOutput=true;
+  debugPrint=true;
+
+  runSqlCommand \
+    descriptiveCommandName="ecommerce" \
+    username="$s_username_sys" password="$s_password_sys" role="$s_role_sys" \
+    host="$v_host" schema="$s_schema_ecommerce" domain="$v_domain" \
+    command="@$P_Container_Workdir/$F_Ecommerce;" \
+    spoolPath="$F_Container_Workdir_Tmp_EcommerceOutput" \
     enableOutput="$enableOutput" \
     debugPrint="$debugPrint";
 
@@ -89,40 +124,42 @@ removeSecrets() {
   rm -f "$P_Container_Workdir/$F_Secrets";
 }
 
-getDefaultDebugPrint() {
-  local debugPrint=false;
-  echo "$debugPrint";
-}
-
-getDefaultEnableOutput() {
-  local enableOutput=false;
-  echo "$enableOutput";
-}
-
 setupContainer() {
   local enableOutput="$(getDefaultEnableOutput)";
   local debugPrint="$(getDefaultDebugPrint)";
 
   section_info "Configure $v_oracle_db_descriptive_name container - try service"
   tryService enableOutput="$enableOutput" debugPrint="$debugPrint";
+  local tryService_result=$?;
+  if [[ $tryService_result -ne 0 ]]; then
+    return 1;
+  fi
 
   section_info "Configure $v_oracle_db_descriptive_name container - change password"
   changePassword enableOutput="$enableOutput" debugPrint="$debugPrint";
+  local changePassword_result=$?;
+  if [[ $changePassword_result -ne 0 ]]; then
+    return 1;
+  fi
 
-  section_info "Configure $v_oracle_db_descriptive_name container - run sql setup script"
-  runSqlSetupScript enableOutput="$enableOutput" debugPrint="$debugPrint";
+  section_info "Configure $v_oracle_db_descriptive_name container - SETUP"
+  setup enableOutput="$enableOutput" debugPrint="$debugPrint";
+  local setup_statusCode=$?;
+  if [[ $setup_statusCode -ne 0 ]]; then
+    return 1;
+  fi
+#
+#  section_info "Configure $v_oracle_db_descriptive_name container - debug sql setup script"
+#  debugSetup enableOutput="$enableOutput" debugPrint="$debugPrint";
+#  local debugSetup_statusCode=$?;
+#
+#  if [[ $setup_statusCode -ne 0 || $debugSetup_statusCode -ne 0 ]]; then
 
-  local runSqlSetupScript_statusCode=$?;
-
-  section_info "Configure $v_oracle_db_descriptive_name container - debug sql setup script"
-  runDebugSqlSetupScript enableOutput="$enableOutput" debugPrint="$debugPrint";
-
-  local runDebugSqlSetupScript_statusCode=$?;
-
-  if [[ $runSqlSetupScript_statusCode -ne 0 || $runDebugSqlSetupScript_statusCode -ne 0 ]]; then
-    command_info "Something went wrong during sql setup script";
-  else
-    command_info "Sql setup script ended successfully"
+  section_info "Configure $v_oracle_db_descriptive_name container - run ECOMMERCE setup"
+  ecommerce enableOutput="$enableOutput" debugPrint="$debugPrint";
+  local ecommerce_statusCode=$?;
+  if [[ $ecommerce_statusCode -ne 0 ]]; then
+    return 1;
   fi
 
   removeSecrets;
