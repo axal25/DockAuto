@@ -98,10 +98,6 @@ COPY "$F_Tdddemo" "$P_Container_Workdir"
 COPY "$F_UnSetup" "$P_Container_Workdir"
 COPY "$F_Vars" "$P_Container_Workdir"
 
-# CMD has already access to entry point so do not need source
-# CMD 'mkdir -p $...';
-# CMD 'chmod 777 $...';
-
 RUN chmod 777 -R "$P_Container_Workdir" \
     && source "$P_Container_Workdir/$F_ContainerFiles" \
 	&& mkdir -p "$P_Container_Workdir_Tmp" \

@@ -1,34 +1,6 @@
 #!/bin/bash
 
-source "$F_S_O_Tomcatapp_Entrypoint"
-
-preBuildImage() {
-  mkdir -p "$P_S_I_Tomcatapp_Copied";
-
-  cp -R "$F_S_PrintFunctions" "$P_S_I_Tomcatapp_Copied";
-}
-
-postBuildImage() {
-  rm -R "$P_S_I_Tomcatapp_Copied";
-}
-
-buildImage() {
-  section_info "Build new $v_tomcat_app_descriptive_name image - $v_tomcat_app_image_name";
-
-  command_info "Prepare to build $v_tomcat_app_descriptive_name image - $v_tomcat_app_image_name";
-  preBuildImage;
-
-  command_info "Build $v_tomcat_app_descriptive_name image - $v_tomcat_app_image_name";
-  docker build --no-cache $(get_build_args_exp "$F_S_O_Tomcatapp_BuildArgs") "$P_S_I_Tomcatapp" -t $v_tomcat_app_image_name;
-
-  command_info "Clean up after building $v_tomcat_app_descriptive_name image - $v_tomcat_app_image_name";
-  postBuildImage;
-}
-
-runContainer() {
-  section_info "Run $v_tomcat_app_descriptive_name container - $v_tomcat_app_container_name | PORTS: $v_tomcat_app_container_port_outer:$v_tomcat_app_container_port_inner";
-  docker run -p "$v_tomcat_app_container_port_outer:$v_tomcat_app_container_port_inner" -it --name $v_tomcat_app_container_name $v_tomcat_app_image_name;
-}
+source "$F_S_O_Tomcatapp_Entrypoint";
 
 containerConfigure() {
   section_info "Configure v_tomcat_app_descriptive_name container - $v_tomcat_app_container_name"
@@ -47,13 +19,23 @@ containerConfigure() {
 buildAndRun() {
   part_info "$v_tomcat_app_descriptive_name" "Preparing image and container";
 
-  cleanUp \
+  tomcatAppCopyFiles=("$F_S_PrintFunctions");
+
+  removeImageContainerAndLeftovers \
     descriptiveDockerName="$v_tomcat_app_descriptive_name" \
     imageName="$v_tomcat_app_image_name" \
     containerName="$v_tomcat_app_container_name";
-  buildImage;
-  runContainer;
-  containerConfigure;
+  buildImage \
+    descriptiveDockerName="$v_tomcat_app_descriptive_name" \
+    imageName="$v_tomcat_app_image_name" \
+    copyFilesTargetPath="$P_S_I_Tomcatapp_Copied" \
+    copyFilesArrayName="tomcatAppCopyFiles" \
+    buildArgsFilePath="$F_S_O_Tomcatapp_BuildArgs" \
+    dockerFilePath="$P_S_I_Tomcatapp";
+  runContainer \
+    descriptiveDockerName="$v_tomcat_app_descriptive_name" \
+    imageName="$v_tomcat_app_image_name" containerName="$v_tomcat_app_container_name" \
+    portsOuterName="v_tomcat_app_container_ports_outer" portsInnerName="v_tomcat_app_container_ports_inner";
 }
 
 buildAndRun;

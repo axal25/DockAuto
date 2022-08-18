@@ -108,8 +108,8 @@ ecommerce() {
   runSqlCommand \
     descriptiveCommandName="ecommerce" \
     username="$s_username_sys" password="$s_password_sys" role="$s_role_sys" \
-    host="$v_host" schema="$s_schema_ecommerce" domain="$v_domain" \
-    command="@$P_Container_Workdir/$F_Ecommerce;" \
+    host="$v_host" schema="$s_schema_ecommerce_main" domain="$v_domain" \
+    command="@$P_Container_Workdir/$F_Ecommerce" \
     spoolPath="$F_Container_Workdir_Tmp_EcommerceOutput" \
     enableOutput="$enableOutput" \
     debugPrint="$debugPrint";
@@ -155,7 +155,7 @@ setupContainer() {
 #
 #  if [[ $setup_statusCode -ne 0 || $debugSetup_statusCode -ne 0 ]]; then
 
-  section_info "Configure $v_oracle_db_descriptive_name container - run ECOMMERCE setup"
+  section_info "Configure $v_oracle_db_descriptive_name container - run \"ecommerce\" setup"
   ecommerce enableOutput="$enableOutput" debugPrint="$debugPrint";
   local ecommerce_statusCode=$?;
   if [[ $ecommerce_statusCode -ne 0 ]]; then

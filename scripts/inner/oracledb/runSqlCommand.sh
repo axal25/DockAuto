@@ -221,8 +221,8 @@ runSqlCommandLoop() {
   local enableOutput debugPrint;
   local "${@}";
 
-  ((waitInterval=10));
-  ((waitTimeLimit=5*60));
+  ((waitInterval=1000));
+  ((waitTimeLimit=5*60*1000));
   ((waitIterationCountLimit=waitTimeLimit/waitInterval));
 
   ((waitIterationCounter=0));

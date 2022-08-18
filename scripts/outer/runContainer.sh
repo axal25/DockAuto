@@ -3,12 +3,30 @@
 startContainer() {
   local descriptiveDockerName;
   local imageName containerName;
-  local portOuter portInner;
+  local portsOuterName portsInnerName;
   local "${@}";
 
-  section_info "Run $descriptiveDockerName container - $containerName | PORTS: $portOuter:$portInner"
+  local -n portsOuterArray="$portsOuterName"; # nameref
+  local -n portsInnerArray="$portsInnerName"; # nameref
+
+  local portsOuterLength=${#portsOuterArray[@]};
+  local portsInnerLength=${#portsInnerArray[@]};
+
+  local ports="";
+
+  for ((i=0; i < portsOuterLength && i < portsInnerLength; i++)); do
+    if [[ "$ports" != "" ]]; then
+      ports+=" ";
+    fi
+    ports+="-p ";
+    ports+="${portsOuterArray[$i]}";
+    ports+=":";
+    ports+="${portsInnerArray[$i]}";
+  done
+
+  section_info "Run $descriptiveDockerName container | PORTS: \"$ports\" - container: $containerName, image: $imageName"
   # -e SETUP_DIR_PATH
-  docker run -d -p "$v_oracle_db_container_port_outer:$v_oracle_db_container_port_inner" -it --name "$containerName" "$imageName"
+   eval "docker run -d $ports -it --name $containerName $imageName";
 }
 
 waitOnContainerRun() {
@@ -38,11 +56,12 @@ containerConfigureOrPrintContainerLogs() {
   local "${@}";
 
   if [[ "$(isRunSuccessful containerName=$containerName)" == true ]]; then
-    containerConfigure
+    containerConfigure;
   elif [[ "$(isRunFailed containerName=$containerName)" == true ]]; then
-    printContainerLogs containerName="$containerName"
+    printContainerLogs containerName="$containerName";
   elif [[ $waitIterationCounter -gt waitIterationCountLimit ]]; then
-    command_info "Wait on iteration count limit exceeded."
+    command_info "Wait on iteration count limit exceeded.";
+    debugContainerDiagnostics containerName="$containerName";
   else
     unhandledLogicError description="$descriptiveDockerName container $containerName"
     debugContainerDiagnostics containerName="$containerName";
@@ -52,13 +71,13 @@ containerConfigureOrPrintContainerLogs() {
 runContainer() {
   local descriptiveDockerName;
   local imageName containerName;
-  local portOuter portInner;
+  local portsOuterName portsInnerName;
   local "${@}";
 
   startContainer \
     descriptiveDockerName="$descriptiveDockerName" \
     imageName="$imageName" containerName="$containerName" \
-    portOuter="$portOuter" portInner="$portInner";
+    portsOuterName="$portsOuterName" portsInnerName="$portsInnerName";
   waitOnContainerRun \
     descriptiveDockerName="$descriptiveDockerName" \
     containerName="$containerName";

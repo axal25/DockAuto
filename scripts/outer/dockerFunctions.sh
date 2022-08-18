@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cleanUp() {
+removeImageContainerAndLeftovers() {
   local descriptiveDockerName;
   local imageName containerName;
   local "${@}";
@@ -20,6 +20,6 @@ cleanUp() {
   # docker network prune -f
   # docker container prune -f
   # docker volume prune -f
-  # docker image prune -f
+  # docker image prune -f -a
   docker system prune -f --volumes > /dev/null 2>&1
 }

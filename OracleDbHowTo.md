@@ -4,15 +4,17 @@
 `$ docker exec -it "$v_oracle_db_container_name" bash -c "source /home/oracle/.bashrc; sqlplus /nolog"`  
 Orignally  
 `$ docker exec -it oracledbcontainer bash -c "source /home/oracle/.bashrc; sqlplus /nolog"`
-1. Connect as user sys  
+2. Connect as user sys  
 `> CONNECT sys AS sysdba`  
 and enter password
     1. Oracle default password `Oradoc_db1`
-    1. This configuration default password `OracleDatabasePassword12345678`)
-1. Try seeing added table  
-`SELECT * FROM region_types;`
-1. To quit connection to docker container's sqlplus  
-`> quit`# Oracle Database how to
+    2. This configuration default password `OracleDatabasePassword12345678`)
+3. Change container PDB (Pluggable Database) to 'ecommerce':  
+`ALTER SESSION SET CONTAINER=ecommerce;`
+5. Try querying data from added table:  
+`SELECT * FROM ecommerce.countries;`
+6. To quit connection to docker container's sqlplus  
+`> quit`
 
 ### OracleDb course information
 
